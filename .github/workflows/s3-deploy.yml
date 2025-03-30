@@ -23,9 +23,6 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     # Upload files to S3
-        - name: create files to S3
-      run: |
-         touch testing test.txt
     - name: Upload files to S3
       run: |
-         aws s3 cp .github/testing.txt s3://gh-actio/ --recursive
+         aws s3 cp .github/testing. s3://gh-actio/ --recursive
