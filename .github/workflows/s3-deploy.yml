@@ -22,4 +22,4 @@ jobs:
 
       - name: Upload Files to S3
         run: |
-          aws s3 sync ./your-folder s3://your-s3-bucket-name --delete
+          aws s3 sync ./your-folder s3://gh-actio/SHEIKSADIQ[8y_0m].docx --delete
