@@ -14,6 +14,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Install AWS CLI
+      run: |
+        # Install dependencies
+        sudo apt-get update
+        sudo apt-get install -y unzip
+        
+        # Download and install AWS CLI v2
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        
+        # Verify installation
+        aws --version
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -23,9 +37,6 @@ jobs:
 
     - name: Sync files to S3 bucket
       run: |
-        # Install AWS CLI if not already present
-        sudo apt-get install -y awscli
-        
         # Sync files (excluding .git directory)
         aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
           --exclude ".git/*" \
