@@ -25,4 +25,4 @@ jobs:
     # Upload files to S3
     - name: Upload files to S3
       run: |
-        aws s3 cp ./path/to/your/files s3://gh-actio/ --recursive
+         aws s3 cp ./dist s3://gh-actio/ --recursive
