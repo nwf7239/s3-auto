@@ -30,7 +30,7 @@ jobs:
         run: aws s3 ls
 
       - name: Debug Directory Path
-        run: ls -la ./your-folder
+        run: ls -la ./gh-actio
 
       - name: Upload Files to S3
-        run: aws s3 sync ./your-folder s3://gh-actio --delete
+        run: aws s3 sync ./gh-actio s3://gh-actio --delete
