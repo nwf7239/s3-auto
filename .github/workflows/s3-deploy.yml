@@ -1,7 +1,9 @@
-name: S3 Auto Update with Cache Control
+name: S3 Auto Update
 
 on:
   push:
+    branches: [ main ] # Change to your default branch if different
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -12,6 +14,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Install AWS CLI
+      run: |
+        # Install dependencies
+        sudo apt-get update
+        sudo apt-get install -y unzip
+        
+        # Download and install AWS CLI v2
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        
+        # Verify installation
+        aws --version
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -19,31 +35,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION || 'ap-south-1' }}
 
-    - name: Sync files to S3 bucket with cache control
+    - name: Sync files to S3 bucket
       run: |
-        # Install AWS CLI
-        sudo apt-get install -y awscli
-        
-        # Sync HTML files with cache for 5 minutes
+        # Sync files (excluding .git directory)
         aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
-          --exclude "*" \
-          --include "*.html" \
-          --cache-control "max-age=300" \
-          --delete
-        
-        # Sync CSS/JS files with cache for 1 year
-        aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
-          --exclude "*" \
-          --include "*.css" \
-          --include "*.js" \
-          --cache-control "max-age=31536000" \
-          --delete
-        
-        # Sync all other files with default cache
-        aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
-          --exclude "*.html" \
-          --exclude "*.css" \
-          --exclude "*.js" \
           --exclude ".git/*" \
           --exclude ".github/*" \
           --delete
