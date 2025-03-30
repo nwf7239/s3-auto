@@ -1,9 +1,7 @@
-name: S3 Auto Update
+name: S3 Auto Update with Cache Control
 
 on:
   push:
-    branches: [ main ] # Change to your default branch if different
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -21,13 +19,31 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION || 'ap-south-1' }}
 
-    - name: Sync files to S3 bucket
+    - name: Sync files to S3 bucket with cache control
       run: |
-        # Install AWS CLI if not already present
+        # Install AWS CLI
         sudo apt-get install -y awscli
         
-        # Sync files (excluding .git directory)
+        # Sync HTML files with cache for 5 minutes
         aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
+          --exclude "*" \
+          --include "*.html" \
+          --cache-control "max-age=300" \
+          --delete
+        
+        # Sync CSS/JS files with cache for 1 year
+        aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
+          --exclude "*" \
+          --include "*.css" \
+          --include "*.js" \
+          --cache-control "max-age=31536000" \
+          --delete
+        
+        # Sync all other files with default cache
+        aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
+          --exclude "*.html" \
+          --exclude "*.css" \
+          --exclude "*.js" \
           --exclude ".git/*" \
           --exclude ".github/*" \
           --delete
