@@ -25,4 +25,4 @@ jobs:
     # Upload files to S3
     - name: Upload files to S3
       run: |
-         aws s3 cp .github/testing. s3://gh-actio/ --recursive
+         aws s3 cp /.github/testing. s3://gh-actio/ --recursive
